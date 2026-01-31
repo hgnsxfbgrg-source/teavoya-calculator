@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>茶飲成本計算器 | Teavoya 嘉柏茶業</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #2D5016;
+            --accent: #FF6B35;
+            --bg: #F9F7F4;
+            --card: #FFFFFF;
+            --text: #333;
+            --text-light: #666;
+        }
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, #1A3009 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+            border-radius: 0 0 20px 20px;
+            margin: -20px -20px 20px;
+        }
+        .header h1 { font-size: 24px; margin-bottom: 8px; }
+        .header p { opacity: 0.9; font-size: 14px; }
+        
+        .card {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        .card h2 {
+            font-size: 16px;
+            color: var(--primary);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .input-group {
+            margin-bottom: 16px;
+        }
+        .input-group label {
+            display: block;
+            font-size: 14px;
+            color: var(--text-light);
+            margin-bottom: 8px;
+        }
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #eee;
+            border-radius: 12px;
+            font-size: 16px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .result-card {
+            background: linear-gradient(135deg, var(--accent) 0%, #F7931E 100%);
+            color: white;
+        }
+        .result-card h2 { color: white; }
+        
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        .result-item:last-child { border-bottom: none; }
+        .result-item .label { opacity: 0.9; }
+        .result-item .value { font-weight: 700; font-size: 18px; }
+        
+        .highlight-box {
+            background: rgba(255,255,255,0.2);
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 16px;
+            text-align: center;
+        }
+        .highlight-box .big-number {
+            font-size: 36px;
+            font-weight: 700;
+        }
+        .highlight-box .desc {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .cta-section {
+            text-align: center;
+            padding: 20px;
+        }
+        .cta-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 16px 32px;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        .cta-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(45,80,22,0.3);
+        }
+        .cta-sub {
+            margin-top: 12px;
+            font-size: 13px;
+            color: var(--text-light);
+        }
+        .cta-sub a {
+            color: var(--primary);
+        }
+        
+        .comparison {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        .comparison-item {
+            flex: 1;
+            text-align: center;
+            padding: 16px;
+            background: #f5f5f5;
+            border-radius: 12px;
+        }
+        .comparison-item.teavoya {
+            background: rgba(45,80,22,0.1);
+            border: 2px solid var(--primary);
+        }
+        .comparison-item .price {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        .comparison-item .name {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧮 茶飲成本計算器</h1>
+            <p>算算用 Teavoya 能省多少錢</p>
+        </div>
+        
+        <div class="card">
+            <h2>📊 輸入你的營業資料</h2>
+            
+            <div class="input-group">
+                <label>每天賣出幾杯茶飲？</label>
+                <input type="number" id="cupsPerDay" value="100" min="1">
+            </div>
+            
+            <div class="input-group">
+                <label>每杯容量 (ml)</label>
+                <select id="cupSize">
+                    <option value="500">500ml（中杯）</option>
+                    <option value="700" selected>700ml（大杯）</option>
+                    <option value="1000">1000ml（特大杯）</option>
+                </select>
+            </div>
+            
+            <div class="input-group">
+                <label>目前每杯茶底成本 (元)</label>
+                <input type="number" id="currentCost" value="5" min="0" step="0.5">
+            </div>
+            
+            <div class="input-group">
+                <label>選擇 Teavoya 產品</label>
+                <select id="product">
+                    <option value="barley" data-cost="1.05" data-name="老麥紅茶">老麥紅茶（每杯 $1.05）⭐ 最省</option>
+                    <option value="traditional" data-cost="2" data-name="古早味紅茶">古早味紅茶（每杯 $2）</option>
+                    <option value="hkmilktea" data-cost="2.5" data-name="港式奶茶紅茶" selected>港式奶茶紅茶（每杯 $2.5）</option>
+                    <option value="ceylon" data-cost="3" data-name="錫蘭紅茶">錫蘭紅茶 FOP（每杯 $3）</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="card result-card" id="resultCard">
+            <h2>💰 省錢計算結果</h2>
+            
+            <div class="result-item">
+                <span class="label">每杯可省</span>
+                <span class="value" id="savePerCup">$2.5</span>
+            </div>
+            <div class="result-item">
+                <span class="label">每日可省</span>
+                <span class="value" id="savePerDay">$250</span>
+            </div>
+            <div class="result-item">
+                <span class="label">每月可省</span>
+                <span class="value" id="savePerMonth">$7,500</span>
+            </div>
+            
+            <div class="highlight-box">
+                <div class="big-number" id="savePerYear">$90,000</div>
+                <div class="desc">每年省下的錢 💪</div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>📈 成本比較</h2>
+            <div class="comparison">
+                <div class="comparison-item">
+                    <div class="price" id="currentCostDisplay">$5.0</div>
+                    <div class="name">目前成本/杯</div>
+                </div>
+                <div class="comparison-item teavoya">
+                    <div class="price" id="teavoyaCost">$2.5</div>
+                    <div class="name">Teavoya/杯</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="cta-section">
+            <a href="https://www.teavoya.com.tw/%E9%A4%90%E9%A3%B2%E6%A5%AD%E8%80%85%E5%B0%88%E5%8D%80" class="cta-btn" target="_blank">
+                🛒 立即訂購
+            </a>
+            <p class="cta-sub">
+                或 <a href="https://line.me/R/ti/p/%40myteainch" target="_blank">LINE 諮詢 @myteainch</a>
+            </p>
+        </div>
+    </div>
+    
+    <script>
+        const cupsInput = document.getElementById('cupsPerDay');
+        const cupSizeSelect = document.getElementById('cupSize');
+        const currentCostInput = document.getElementById('currentCost');
+        const productSelect = document.getElementById('product');
+        
+        function calculate() {
+            const cups = parseInt(cupsInput.value) || 0;
+            const currentCost = parseFloat(currentCostInput.value) || 0;
+            const selectedOption = productSelect.options[productSelect.selectedIndex];
+            const teavoyaCost = parseFloat(selectedOption.dataset.cost) || 0;
+            
+            const savePerCup = Math.max(0, currentCost - teavoyaCost);
+            const savePerDay = savePerCup * cups;
+            const savePerMonth = savePerDay * 30;
+            const savePerYear = savePerDay * 365;
+            
+            document.getElementById('savePerCup').textContent = '$' + savePerCup.toFixed(1);
+            document.getElementById('savePerDay').textContent = '$' + savePerDay.toLocaleString();
+            document.getElementById('savePerMonth').textContent = '$' + savePerMonth.toLocaleString();
+            document.getElementById('savePerYear').textContent = '$' + savePerYear.toLocaleString();
+            document.getElementById('currentCostDisplay').textContent = '$' + currentCost.toFixed(1);
+            document.getElementById('teavoyaCost').textContent = '$' + teavoyaCost.toFixed(1);
+        }
+        
+        cupsInput.addEventListener('input', calculate);
+        cupSizeSelect.addEventListener('change', calculate);
+        currentCostInput.addEventListener('input', calculate);
+        productSelect.addEventListener('change', calculate);
+        
+        calculate();
+    </script>
+</body>
+</html>
